@@ -37,7 +37,6 @@ def ifactorial(n):
     
     if n < 0: raise ValueError, "Negative factorials are undefined."
     
-    n = int(n)                                      # force integer math here
     i = 0
     p = 1
     while i < n:
@@ -55,7 +54,6 @@ def rfactorial(n):
     
     if n == 0: 
         return 1
-    n = int(n)
     return n * rfactorial(n-1)
 
 def binomial(n,k):
@@ -73,11 +71,10 @@ def ibinomial(n,k):
     """Calculate the binomial coefficient of n choose k iterativly.
         result = (n)/(k) * (n-1)/(k-1) * (n-2)/(k-2) * ... * (n-k)"""
     
-    if n*k < 0: raise ValueError, "n and k must be positive."
+    if n < 0 or k < 0: raise ValueError, "n and k must be positive."
     if k > n:   raise ValueError, "k must not be greater than n."
     
     p = 1.0
-    k = float(k)                                    # forces float division for n/k below
     while k > 0:
         p *= (n / k)
         n -= 1
@@ -89,15 +86,12 @@ def rbinomial(n,k):
         result = (n)/(k) * rbinomial(n-1,k-1),
         result = 1 if k == 0"""
     
-    if n*k < 0: raise ValueError, "n and k must be positive."
+    if n < 0 or k < 0: raise ValueError, "n and k must be positive."
     if k > n:   raise ValueError, "k must not be greater than n."
     
     if k == 0:
         return 1
-    k = float(k)
-    p = (n/k) * rbinomial(n-1,k-1)
-    return int(p) if p.is_integer() else p
-
+    return n * rbinomial(n-1,k-1) / k
 
 class MyTests(unittest.TestCase):
     """Unit tests for this module."""
