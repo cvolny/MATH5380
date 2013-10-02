@@ -93,10 +93,17 @@ def rbinomial(n,k):
         return 1
     return n * rbinomial(n-1,k-1) / k
 
-def gcd(a,b):
+def gcd(a, b, count=False):
     """Calculate the gcd of a and b using Euclid's method, iteratively."""
+    c = 0
     while b > 0:
         a, b = b, a % b
+        c += 1
+    if True == count:
+        return (a, c)
     return a
 
-
+def count_gcd(a,b):
+    """Returns just the count from gcd(*,*,True)"""
+    a, c = gcd(a,b,count=True)
+    return c
