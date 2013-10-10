@@ -107,3 +107,24 @@ def count_gcd(a,b):
     """Returns just the count from gcd(*,*,True)"""
     a, c = gcd(a,b,count=True)
     return c
+
+def regcd(a, b):
+    """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
+    if 0 == b:
+        return (1, 0)
+    else:
+        (q, r) = divmod(a, b)
+        (s, t) = rtegcd(b, r)
+        return (t, s - q * t)
+
+def egcd(a, b):
+    """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
+    s = 0;  ls = 1
+    t = 1;  lt = 0
+    while not 0 == b:
+        (q, r) = divmod(a,b)
+        (a, b) = (b, r)
+        (s, ls) = (ls - q * s, s)
+        (t, lt) = (lt - q * t, t)
+    return (ls, lt)
+
