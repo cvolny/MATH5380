@@ -128,3 +128,95 @@ def egcd(a, b):
         (t, lt) = (lt - q * t, t)
     return (ls, lt)
 
+def lcm(a, b):
+    """Returns the least common multiple of two numbers using gcd."""
+    return a * b / gcd(a, b)
+
+class Rational:
+    """A type to represent Rational n/d numbers using to integers."""
+
+    def __init__(self, n, d, simplify=True):
+        """Initialize Rational with a given numerator and denominator."""
+        self.n = n
+        self.d = d
+        if simplify:
+            Rational.simplify(self)
+
+    @staticmethod
+    def simplify(a):
+        """Simplify a given Rational `a` in lowest terms."""
+        d = gcd(a.n, a.d)
+        a.n /= d
+        a.d /= d
+        return a
+
+    @staticmethod
+    def multiple(a, m):
+        """Return Rational `a` in denominator terms of m."""
+        if (m % a.d) == 0:
+            x = m / a.d
+            return Rational(a.n * x, a.d * x, simplify=False)
+        else:
+            raise ValueError, "Provided multiple is not divisible by a's denominator, %s." % (a.d,)
+
+    @staticmethod
+    def common_term(a, b):
+        """Return two Rationals, a and b, in common terms using lcm."""
+        m = lcm(a.d, b.d)
+        return (Rational.multiple(a, m), Rational.multiple(b, m))
+
+    def __cmp__(self, other):
+        """Compare two Rationals using arithmatic of numerators when both are in common terms (lcm)."""
+        a, b = Rational.common_term(self, other)
+        return (a.n - b.n)
+
+    def __neg__(self):
+        """Support negation of a Rational."""
+        return Rational(self.n * -1, self.d)
+
+    def __invert__(self):
+        """Support inversion (reciprical) of a Rational."""
+        return Rational(self.d, self.n)
+
+    def __add__(self, other):
+        """Support addition between Rationals."""
+        a, b = Rational.common_term(self, other)
+        c = Rational(a.n + b.n, a.d)
+        Rational.simplify(c)
+        return c
+
+    def __sub__(self, other):
+        """Support subtractions between Rationals by using __neg__ and __add__."""
+        return self + (-other)
+
+    def __mul__(self, other):
+        """Support multiplication of Rationals."""
+        return Rational(self.n * other.n, self.d * other.d)
+
+    def __div__(self, other):
+        """Support division of Rationals by using __invert__ and __mul__."""
+        return self * (~other)
+
+    def __str__(self):
+        """Returns a string representation of the instance."""
+        return "%s/%s" % (self.n, self.d,)
+
+    def __repr__(self):
+        """Returns a console friendly string representation of the instance, using __str__."""
+        return str(self)
+
+    def __long__(self):
+        """Support to simplification to long value."""
+        a = Rational.simplify(self)
+        if a.d == 1:
+            return a.n
+        else:
+            raise ValueError, "Cannot simplify %s to integral value with non-one denominator." % (a,)
+
+    def __int__(self):
+        """Lazily support simplification to integer value via __long__."""
+        return int(long(self))
+
+    def __float__(self):
+        """Evaluate the Rational into a float type."""
+        return (self.n / float(self.d))
