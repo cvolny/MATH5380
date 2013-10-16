@@ -58,6 +58,7 @@ def rfactorial(n):
         return 1
     return n * rfactorial(n-1)
 
+
 def binomial(n,k):
     """Calculate the binomial coefficient of n choose k.
         result = n! / (k! * (n-k)!),
@@ -83,6 +84,7 @@ def ibinomial(n,k):
         i += 1
     return p
 
+
 def rbinomial(n,k):
     """Calculate the binomial coefficient of n choose k recursively.
         result = (n)/(k) * rbinomial(n-1,k-1),
@@ -95,6 +97,7 @@ def rbinomial(n,k):
         return 1
     return n * rbinomial(n-1,k-1) / k
 
+
 def gcd(a, b, count=False):
     """Calculate the gcd of a and b using Euclid's method, iteratively."""
     c = 0
@@ -105,10 +108,12 @@ def gcd(a, b, count=False):
         return (a, c)
     return a
 
+
 def count_gcd(a,b):
     """Returns just the count from gcd(*,*,True)"""
     a, c = gcd(a,b,count=True)
     return c
+
 
 def regcd(a, b):
     """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
@@ -118,6 +123,7 @@ def regcd(a, b):
         (q, r) = divmod(a, b)
         (s, t) = regcd(b, r)
         return (t, s - q * t)
+
 
 def egcd(a, b):
     """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
@@ -130,9 +136,11 @@ def egcd(a, b):
         (t, lt) = (lt - q * t, t)
     return (ls, lt)
 
+
 def lcm(a, b):
     """Returns the least common multiple of two numbers using gcd."""
     return a * b / gcd(a, b)
+
 
 class Rational():
     """A type to represent Rational n/d numbers using to integers."""
