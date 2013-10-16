@@ -2,6 +2,7 @@ from discrete import *
 import random
 import unittest
 
+
 class MyTests(unittest.TestCase):
     """Unit tests for this module."""
     
@@ -31,4 +32,21 @@ class MyTests(unittest.TestCase):
         """Test cases for gcd function. Zero case and some static values."""
         self.assertEqual(12341234, gcd(12341234,0))
         self.assertEqual(100*10*55, gcd(100*10*55, 200*10*55))
+
+    def test_lcm(self):
+        self.assertEqual(0, lcm(5000, 0))
+        for i in range(15):
+            a, b = random.randint(i, 500), random.randint(i, 500)
+            self.assertEqual(a * b / gcd(a, b), lcm(a, b))
+
+    def test_rational(self):
+        self.assertEqual(5, Rational(5, 2) * 2)
+        self.assertEqual(Rational(5, 2), Rational(1, 2) * 5)
+        self.assertEqual(Rational(10, 5), Rational(2) * Rational(3) / Rational(3))
+        self.assertEqual(Rational(97, 10), Rational(13, 2) + Rational(16, 5))
+        self.assertEqual(5, int(Rational(0) + Rational(10, 2)))
+        for i in range(15):
+            r = random.uniform(i, 500)
+            self.assertEqual(r, float(Rational(r) + Rational(1, 1) - Rational(2, 2)))
+
 
