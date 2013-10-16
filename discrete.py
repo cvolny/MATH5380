@@ -3,7 +3,6 @@ from operator import mul
 import copy
 import numbers
 import sys
-import unittest
 
 
 # use this for large value testing in rfatorial(n) and rbinomial(n,k)
