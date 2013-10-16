@@ -1,5 +1,6 @@
 from math import factorial
 from operator import mul
+import copy
 import numbers
 import sys
 import unittest
@@ -115,7 +116,7 @@ def regcd(a, b):
         return (1, 0)
     else:
         (q, r) = divmod(a, b)
-        (s, t) = rtegcd(b, r)
+        (s, t) = regcd(b, r)
         return (t, s - q * t)
 
 def egcd(a, b):
@@ -139,6 +140,8 @@ class Rational():
     @staticmethod
     def common_terms(a, b):
         """Return two Rationals, a and b, in common terms using lcm."""
+        a = a.copy()
+        b = b.copy()
         m = lcm(a.d, b.d)
         a.by(m)
         b.by(m)
@@ -146,21 +149,28 @@ class Rational():
 
     def __init__(self, n, d=None, simplify=True):
         """Initialize Rational with a given numerator and denominator."""
-        if 0 == d:
-            raise ZeroDivisionError("Denominator must be non-zero.")
-        elif None == d:
-            if isinstance(n, numbers.Integral):
+        if None == d:
+            if isinstance(n, Rational):
+                self.n = n.n
+                self.d = n.d
+            elif isinstance(n, numbers.Integral):
                 self.n = n
                 self.d = 1
             elif hasattr(n, 'as_integer_ratio'):
                 self.n, self.d = n.as_integer_ratio()
             else:
                 raise ValueError("Cannot construct rational from given type {}.".format(type(n)))
+        elif 0 == d:
+            raise ZeroDivisionError("Denominator must be non-zero.")
         else:
             self.n = n
             self.d = d
-            if simplify:
-                self.simplify()
+        if simplify:
+            self.simplify()
+
+    def copy(self):
+        """Copy factory method."""
+        return copy.deepcopy(self)
 
     def simplify(self):
         """Simplify n and d to lowest terms."""
@@ -181,6 +191,7 @@ class Rational():
 
     def __cmp__(self, other):
         """Compare two Rationals using arithmatic of numerators when both are in common terms (lcm)."""
+        other = Rational(other)
         a, b = Rational.common_terms(self, other)
         return a.n - b.n
 
@@ -194,20 +205,24 @@ class Rational():
 
     def __add__(self, other):
         """Support addition between Rationals."""
+        other = Rational(other)
         a, b = Rational.common_terms(self, other)
         c = Rational(a.n + b.n, a.d)
         return c
 
     def __sub__(self, other):
         """Support subtractions between Rationals by using __neg__ and __add__."""
+        other = Rational(other)
         return self + (-other)
 
     def __mul__(self, other):
         """Support multiplication of Rationals."""
+        other = Rational(other)
         return Rational(self.n * other.n, self.d * other.d)
 
     def __div__(self, other):
         """Support division of Rationals by using __invert__ and __mul__."""
+        other = Rational(other)
         return self * (~other)
 
     def __str__(self):
@@ -220,9 +235,10 @@ class Rational():
 
     def __long__(self):
         """Support to simplification to long value."""
-        self.simplify()
-        if self.d == 1:
-            return self.n
+        sp = Rational(self)
+        sp.simplify()
+        if sp.d == 1:
+            return sp.n
         else:
             raise ValueError("Cannot simplify {} to integral value with non-one denominator.".format(self))
 
@@ -234,3 +250,6 @@ class Rational():
         """Evaluate the Rational into a float type."""
         return self.n / float(self.d)
 
+    def as_integer_ratio(self):
+        """Return numerator and denominator as tuple (type duck (big)float)."""
+        return self.n, self.d
