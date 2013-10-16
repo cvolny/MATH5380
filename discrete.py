@@ -1,5 +1,6 @@
 from math import factorial
 from operator import mul
+import numbers
 import sys
 import unittest
 
@@ -132,43 +133,56 @@ def lcm(a, b):
     """Returns the least common multiple of two numbers using gcd."""
     return a * b / gcd(a, b)
 
-class Rational:
+class Rational():
     """A type to represent Rational n/d numbers using to integers."""
 
-    def __init__(self, n, d, simplify=True):
-        """Initialize Rational with a given numerator and denominator."""
-        self.n = n
-        self.d = d
-        if simplify:
-            Rational.simplify(self)
-
     @staticmethod
-    def simplify(a):
-        """Simplify a given Rational `a` in lowest terms."""
-        d = gcd(a.n, a.d)
-        a.n /= d
-        a.d /= d
-        return a
-
-    @staticmethod
-    def multiple(a, m):
-        """Return Rational `a` in denominator terms of m."""
-        if (m % a.d) == 0:
-            x = m / a.d
-            return Rational(a.n * x, a.d * x, simplify=False)
-        else:
-            raise ValueError, "Provided multiple is not divisible by a's denominator, %s." % (a.d,)
-
-    @staticmethod
-    def common_term(a, b):
+    def common_terms(a, b):
         """Return two Rationals, a and b, in common terms using lcm."""
         m = lcm(a.d, b.d)
-        return (Rational.multiple(a, m), Rational.multiple(b, m))
+        a.by(m)
+        b.by(m)
+        return a, b
+
+    def __init__(self, n, d=None, simplify=True):
+        """Initialize Rational with a given numerator and denominator."""
+        if 0 == d:
+            raise ZeroDivisionError("Denominator must be non-zero.")
+        elif None == d:
+            if isinstance(n, numbers.Integral):
+                self.n = n
+                self.d = 1
+            elif hasattr(n, 'as_integer_ratio'):
+                self.n, self.d = n.as_integer_ratio()
+            else:
+                raise ValueError("Cannot construct rational from given type {}.".format(type(n)))
+        else:
+            self.n = n
+            self.d = d
+            if simplify:
+                self.simplify()
+
+    def simplify(self):
+        """Simplify n and d to lowest terms."""
+        g = gcd(self.n, self.d)
+        self.n /= g
+        self.d /= g
+        return self
+
+    def by(self, m):
+        """Scale to denominator in terms of m."""
+        q, r = divmod(m, self.d)
+        if r == 0:
+            self.n *= q
+            self.d *= q
+        else:
+            raise ValueError("Provided multiple {} is not divisible by current denominator {}.".format(m, self.d))
+        return self
 
     def __cmp__(self, other):
         """Compare two Rationals using arithmatic of numerators when both are in common terms (lcm)."""
-        a, b = Rational.common_term(self, other)
-        return (a.n - b.n)
+        a, b = Rational.common_terms(self, other)
+        return a.n - b.n
 
     def __neg__(self):
         """Support negation of a Rational."""
@@ -180,9 +194,8 @@ class Rational:
 
     def __add__(self, other):
         """Support addition between Rationals."""
-        a, b = Rational.common_term(self, other)
+        a, b = Rational.common_terms(self, other)
         c = Rational(a.n + b.n, a.d)
-        Rational.simplify(c)
         return c
 
     def __sub__(self, other):
@@ -207,11 +220,11 @@ class Rational:
 
     def __long__(self):
         """Support to simplification to long value."""
-        a = Rational.simplify(self)
-        if a.d == 1:
-            return a.n
+        self.simplify()
+        if self.d == 1:
+            return self.n
         else:
-            raise ValueError, "Cannot simplify %s to integral value with non-one denominator." % (a,)
+            raise ValueError("Cannot simplify {} to integral value with non-one denominator.".format(self))
 
     def __int__(self):
         """Lazily support simplification to integer value via __long__."""
@@ -219,4 +232,5 @@ class Rational:
 
     def __float__(self):
         """Evaluate the Rational into a float type."""
-        return (self.n / float(self.d))
+        return self.n / float(self.d)
+

@@ -1,4 +1,4 @@
-from main import *
+from discrete import *
 import random
 import unittest
 

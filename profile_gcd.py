@@ -4,7 +4,7 @@ import random
 import sys
 import timeit
 from volny_magic import median, random_length #, tosn
-from main import count_gcd
+from discrete import count_gcd
 
 """
 This module will profile GCD and write out to CSVs for further analysis in LibreOffice Calc.
