@@ -100,9 +100,9 @@ def rbinomial(n,k):
 def rgcd(a, b):
     """Recursively calculate the gcd of a and b using Euclid's method."""
     if 0 == b:
-       return a
+        return a
     else:
-       return gcd(b, a % b)
+        return gcd(b, a % b)
 
 
 def gcd(a, b, count=False):
