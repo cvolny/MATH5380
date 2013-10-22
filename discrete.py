@@ -131,7 +131,7 @@ def count_gcd(a,b):
     return c
 
 
-def rpowermod(b, n, m=0):
+def rpowermod(b, n, m=None):
     """Returns a = b^n or a = b^n mod m if m is specified; uses Indian powermod algorithm (recursively)."""
     if n == 0:
         return 1
@@ -140,12 +140,12 @@ def rpowermod(b, n, m=0):
         x = rpowermod(b, n, m)**2
         if r > 0:
             x *= b
-        if m > 0:
+        if m:
             x %= m
         return x
 
 
-def powermod(b, n, m=0):
+def powermod(b, n, m=None):
     """Returns a = b^n or a = b^n mod m if m is specified; uses Indian powermod algorithm (iteratively)."""
     x = 1
     while n != 0:
