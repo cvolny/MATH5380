@@ -17,7 +17,7 @@ def prod(x):
 def digits(x, b, rev=False):
     """Returns list of digits in base-b from given base-10 number x."""
     v = []                          # results
-    while x > 0:                    # loop so long as x is positve
+    while x > 0:                    # loop so long as x is positive
         x,d = divmod(x,b)           # d <- x mod b, x <- x int-div b
         v.append(d)
     return v[::-1] if rev else v    # reverse if specified and return
@@ -36,7 +36,8 @@ def horner(v, b, rev=False):
 def ifactorial(n):
     """Iteratively take positive int n and return n factorial."""
     
-    if n < 0: raise ValueError, "Negative factorials are undefined."
+    if n < 0:
+        raise ValueError("Negative factorials are undefined.")
     
     i = 0
     p = 1
@@ -51,7 +52,8 @@ def ifactorial(n):
 #@lru_cache(maxsize=50)                             # disable for now...
 def rfactorial(n):
     """Recursively take positive int n and return n factorial."""
-    if n < 0: raise ValueError, "Negative factorials are undefined."
+    if n < 0:
+        raise ValueError("Negative factorials are undefined.")
     
     if n == 0: 
         return 1
@@ -63,8 +65,10 @@ def binomial(n,k):
         result = n! / (k! * (n-k)!),
         using math.factorial(x)."""
     
-    if n < 0 or k < 0: raise ValueError, "n and k must be positive."
-    if k > n:   raise ValueError, "k must not be greater than n."
+    if n < 0 or k < 0:
+        raise ValueError("n and k must be positive.")
+    if k > n:
+        raise ValueError("k must not be greater than n.")
     
     return factorial(n) / (factorial(k) * factorial(n-k))
 
@@ -73,8 +77,10 @@ def ibinomial(n,k):
     """Calculate the binomial coefficient of n choose k iterativly.
         result = (n)/(k) * (n-1)/(k-1) * (n-2)/(k-2) * ... * (n-k)"""
     
-    if n < 0 or k < 0: raise ValueError, "n and k must be positive."
-    if k > n:   raise ValueError, "k must not be greater than n."
+    if n < 0 or k < 0:
+        raise ValueError("n and k must be positive.")
+    if k > n:
+        raise ValueError("k must not be greater than n.")
     
     p = 1
     i = 1
@@ -89,12 +95,14 @@ def rbinomial(n,k):
         result = (n)/(k) * rbinomial(n-1,k-1),
         result = 1 if k == 0"""
     
-    if n < 0 or k < 0: raise ValueError, "n and k must be positive."
-    if k > n:   raise ValueError, "k must not be greater than n."
+    if n < 0 or k < 0:
+        raise ValueError("n and k must be positive.")
+    if k > n:
+        raise ValueError("k must not be greater than n.")
     
     if k == 0:
         return 1
-    return n * rbinomial(n-1,k-1) / k
+    return n * rbinomial(n-1, k-1) / k
 
 
 def rgcd(a, b):
@@ -112,37 +120,37 @@ def gcd(a, b, count=False):
         a, b = b, a % b
         c += 1
     a = abs(a)
-    if True == count:
-        return (a, c)
+    if count:
+        return a, c
     return a
 
 
 def count_gcd(a,b):
     """Returns just the count from gcd(*,*,True)"""
-    a, c = gcd(a,b,count=True)
+    a, c = gcd(a, b, count=True)
     return c
 
 
 def regcd(a, b):
     """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
     if 0 == b:
-        return (1, 0)
+        return 1, 0
     else:
         (q, r) = divmod(a, b)
         (s, t) = regcd(b, r)
-        return (t, s - q * t)
+        return t, s - q * t
 
 
 def egcd(a, b):
     """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
-    s = 0;  ls = 1
-    t = 1;  lt = 0
+    s, ls = 0, 1
+    t, lt = 1, 0
     while not 0 == b:
         (q, r) = divmod(a,b)
         (a, b) = (b, r)
         (s, ls) = (ls - q * s, s)
         (t, lt) = (lt - q * t, t)
-    return (ls, lt)
+    return ls, lt
 
 
 def lcm(a, b):
