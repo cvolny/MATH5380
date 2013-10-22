@@ -131,6 +131,35 @@ def count_gcd(a,b):
     return c
 
 
+def rpowermod(b, n, m=0):
+    """Returns a = b^n or a = b^n mod m if m is specified; uses Indian powermod algorithm (recursively)."""
+    if n == 0:
+        return 1
+    else:
+        n, r = divmod(n, 2)
+        x = rpowermod(b, n, m)**2
+        if r > 0:
+            x *= b
+        if m > 0:
+            x %= m
+        return x
+
+
+def powermod(b, n, m=0):
+    """Returns a = b^n or a = b^n mod m if m is specified; uses Indian powermod algorithm (iteratively)."""
+    x = 1
+    while n != 0:
+        if n & 1:
+            x *= b
+            if m:
+                x %= m
+        n /= 2
+        b *= b
+        if m:
+            b %= m
+    return x
+
+
 def regcd(a, b):
     """Returns s and t from Euclid's extended gcd; namely: s*a + t*b = gcd(a,b)"""
     if 0 == b:
