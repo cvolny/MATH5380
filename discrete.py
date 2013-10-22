@@ -97,6 +97,14 @@ def rbinomial(n,k):
     return n * rbinomial(n-1,k-1) / k
 
 
+def rgcd(a, b):
+    """Recursively calculate the gcd of a and b using Euclid's method."""
+    if 0 == b:
+       return a
+    else:
+       return gcd(b, a % b)
+
+
 def gcd(a, b, count=False):
     """Calculate the gcd of a and b using Euclid's method, iteratively."""
     c = 0
