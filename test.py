@@ -59,6 +59,14 @@ class MyTests(unittest.TestCase):
             for j in range(2, 15):
                 self.assertEqual(powermod(a, b, j), rpowermod(a, b, j))
 
+    def test_egcd(self):
+        for i in range(15):
+            a, b = random_length_pair(10)
+            s, t = regcd(a, b)
+            self.assertEqual(gcd(a, b), s*a+t*b)
+            sp, tp = egcd(a, b)
+            self.assertEqual((sp, tp), (s, t))
+
 
 if "__main__" == __name__:
     unittest.main()
