@@ -1,8 +1,10 @@
 from math import factorial
 from operator import mul
+from some_primes import SomePrimes
 import copy
 import numbers
 import sys
+import random
 
 
 # use this for large value testing in rfatorial(n) and rbinomial(n,k)
@@ -325,10 +327,13 @@ class Rational():
         """Return numerator and denominator as tuple (type duck (big)float)."""
         return self.n, self.d
 
+
 def generate_rsa():
     global some_primes
     p = random.choice(SomePrimes)
     q = random.choice(SomePrimes)
+    n = p * q
+    phi = (p-1)*(q-1) 
     while 1:
         a = random.randint(1, n-1)
         if gcd(phi, a) == 1:
@@ -336,7 +341,6 @@ def generate_rsa():
     b, c = egcd(a, phi)
     if b < 0:
         b = b % phi
-
     return {'a': a, 'b': b, 'p': p, 'q': q, 'phi': phi,}
 
 
