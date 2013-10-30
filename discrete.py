@@ -341,7 +341,7 @@ def generate_rsa():
     b, c = egcd(a, phi)
     if b < 0:
         b = b % phi
-    return {'a': a, 'b': b, 'p': p, 'q': q, 'phi': phi,}
+    return {'a': a, 'b': b, 'p': p, 'q': q, 'n': n, 'phi': phi,}
 
 
 def rsa_encrypt(m, a, n):
