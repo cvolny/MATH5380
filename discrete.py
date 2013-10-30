@@ -324,3 +324,32 @@ class Rational():
     def as_integer_ratio(self):
         """Return numerator and denominator as tuple (type duck (big)float)."""
         return self.n, self.d
+
+def generate_rsa():
+    global some_primes
+    p = random.choice(SomePrimes)
+    q = random.choice(SomePrimes)
+    while 1:
+        a = random.randint(1, n-1)
+        if gcd(phi, a) == 1:
+            break
+    b, c = egcd(a, phi)
+    if b < 0:
+        b = b % phi
+
+    return {'a': a, 'b': b, 'p': p, 'q': q, 'phi': phi,}
+
+
+def rsa_encrypt(m, a, n):
+    return powermod(m, a, n)
+
+
+def rsa_decrypt(c, b, n):
+    return powermod(c, b, n)
+
+
+def test_rsa(m, a, b, n):
+    c  = rsa_encrypt(m, a, n)
+    mp = rsa_decrypt(c, b, n)
+    return m == mp
+
