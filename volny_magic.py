@@ -35,6 +35,11 @@ def random_length(n):
     return l
 
 
+def random_length_pair(n):
+    """Returns a pair of numbers of length-n"""
+    return random_length(n), random_length(n)
+
+
 # TODO: figure out why these didn't work...
 
 def chaining_decorator(f):

@@ -1,10 +1,11 @@
 from discrete import *
+from volny_magic import random_length_pair
 import random
 import unittest
 
 
 class MyTests(unittest.TestCase):
-    """Unit tests for this module."""
+    """Unit tests for this project."""
     
     def test_bases(self):
         """Test cases for digits and horner functions against some values."""
@@ -54,3 +55,23 @@ class MyTests(unittest.TestCase):
         self.assertEqual(foo, [list(s) for s in powerset([1, 5, 7])])
         self.assertEqual([[]], [list(s) for s in powerset([])])
 
+    def test_powermod(self):
+        for i in range(15):
+            a, b = random_length_pair(3)
+            self.assertEqual(powermod(a, b), rpowermod(a, b))
+        for i in range(15):
+            a, b = random_length_pair(10)
+            for j in range(2, 15):
+                self.assertEqual(powermod(a, b, j), rpowermod(a, b, j))
+
+    def test_egcd(self):
+        for i in range(15):
+            a, b = random_length_pair(10)
+            s, t = regcd(a, b)
+            self.assertEqual(gcd(a, b), s*a+t*b)
+            sp, tp = egcd(a, b)
+            self.assertEqual((sp, tp), (s, t))
+
+
+if "__main__" == __name__:
+    unittest.main()
