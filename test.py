@@ -49,4 +49,8 @@ class MyTests(unittest.TestCase):
             r = random.uniform(i, 500)
             self.assertEqual(r, float(Rational(r) + Rational(1, 1) - Rational(2, 2)))
 
+    def test_powerset(self):
+        foo = [[], [1], [5], [1, 5], [7], [1, 7], [5, 7], [1, 5, 7]]
+        self.assertEqual(foo, [list(s) for s in powerset([1, 5, 7])])
+        self.assertEqual([[]], [list(s) for s in powerset([])])
 
