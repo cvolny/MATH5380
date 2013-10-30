@@ -136,6 +136,24 @@ def egcd(a, b):
     return (ls, lt)
 
 
+def powerset(v):
+    """generator for powerset of vector v (must be subscriptable like list/tuple). """
+    l = len(v)
+    m = 2**l
+    i = 0
+    while i < m:
+        d = digits(i, 2)
+        dl = len(d)
+        j = 0
+        r = set()
+        while j < dl:
+            if d[j]:
+                r.add(v[j])
+            j += 1
+        i += 1
+        yield r
+
+
 def lcm(a, b):
     """Returns the least common multiple of two numbers using gcd."""
     return a * b / gcd(a, b)
