@@ -329,6 +329,7 @@ class Rational():
 
 
 def generate_rsa():
+    """Generate RSA public and private key information."""
     global some_primes
     p = random.choice(SomePrimes)
     q = random.choice(SomePrimes)
@@ -341,19 +342,14 @@ def generate_rsa():
     b, c = egcd(a, phi)
     if b < 0:
         b = b % phi
-    return {'a': a, 'b': b, 'p': p, 'q': q, 'n': n, 'phi': phi,}
+    return {'a': a, 'b': b, 'p': p, 'q': q, 'n': n, 'phi': phi, }
 
 
 def rsa_encrypt(m, a, n):
+    """Generate cipher given message m, exponent a, and modulus n."""
     return powermod(m, a, n)
 
 
 def rsa_decrypt(c, b, n):
+    """Generate clear given cipher c, exponent b, and modulus n."""
     return powermod(c, b, n)
-
-
-def test_rsa(m, a, b, n):
-    c  = rsa_encrypt(m, a, n)
-    mp = rsa_decrypt(c, b, n)
-    return m == mp
-
