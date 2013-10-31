@@ -1,5 +1,5 @@
 from discrete import *
-from volny_magic import random_length_pair
+from volny_magic import random_length_pair, random_length
 import random
 import unittest
 
@@ -35,12 +35,14 @@ class MyTests(unittest.TestCase):
         self.assertEqual(100*10*55, gcd(100*10*55, 200*10*55))
 
     def test_lcm(self):
+        """Test case for lcm function. Zero case and random values."""
         self.assertEqual(0, lcm(5000, 0))
         for i in range(15):
             a, b = random.randint(i, 500), random.randint(i, 500)
             self.assertEqual(a * b / gcd(a, b), lcm(a, b))
 
     def test_rational(self):
+        """Test case for Rational class. Static tests and random test."""
         self.assertEqual(5, Rational(5, 2) * 2)
         self.assertEqual(Rational(5, 2), Rational(1, 2) * 5)
         self.assertEqual(Rational(10, 5), Rational(2) * Rational(3) / Rational(3))
@@ -51,11 +53,13 @@ class MyTests(unittest.TestCase):
             self.assertEqual(r, float(Rational(r) + Rational(1, 1) - Rational(2, 2)))
 
     def test_powerset(self):
+        """Test case for powerset generator. Static and zero test."""
         foo = [[], [1], [5], [1, 5], [7], [1, 7], [5, 7], [1, 5, 7]]
         self.assertEqual(foo, [list(s) for s in powerset([1, 5, 7])])
         self.assertEqual([[]], [list(s) for s in powerset([])])
 
     def test_powermod(self):
+        """Test case for iterative vs. powermod results."""
         for i in range(15):
             a, b = random_length_pair(3)
             self.assertEqual(powermod(a, b), rpowermod(a, b))
@@ -65,12 +69,22 @@ class MyTests(unittest.TestCase):
                 self.assertEqual(powermod(a, b, j), rpowermod(a, b, j))
 
     def test_egcd(self):
+        """Test case for random pairs against extended gcd function."""
         for i in range(15):
             a, b = random_length_pair(10)
             s, t = regcd(a, b)
             self.assertEqual(gcd(a, b), s*a+t*b)
             sp, tp = egcd(a, b)
             self.assertEqual((sp, tp), (s, t))
+
+    def test_rsa(self):
+        """Test case for classroom RSA functions. Generates 3 pairs and runs 5 tests each."""
+        for x in range(3):
+            d = generate_rsa()
+            for m in [random_length(50) for y in range(5)]:
+                c = rsa_encrypt(m, d['a'], d['n'])
+                mp = rsa_decrypt(c, d['b'], d['n'])
+                self.assertEqual(c, mp)
 
 
 if "__main__" == __name__:
