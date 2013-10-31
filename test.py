@@ -81,10 +81,11 @@ class MyTests(unittest.TestCase):
         """Test case for classroom RSA functions. Generates 3 pairs and runs 5 tests each."""
         for x in range(3):
             d = generate_rsa()
-            for m in [random_length(50) for y in range(5)]:
+            nlen = len(str(d['n']))
+            for m in [random_length(nlen-1) for y in range(5)]:
                 c = rsa_encrypt(m, d['a'], d['n'])
                 mp = rsa_decrypt(c, d['b'], d['n'])
-                self.assertEqual(c, mp)
+                self.assertEqual(m, mp)
 
 
 if "__main__" == __name__:
