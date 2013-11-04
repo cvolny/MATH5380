@@ -3,12 +3,16 @@ from operator import mul
 from some_primes import SomePrimes
 import copy
 import numbers
+import string
 import sys
 import random
 
 
 # use this for large value testing in rfatorial(n) and rbinomial(n,k)
 sys.setrecursionlimit(50000)
+
+# simple alphabet for string encoding/decoding in base-100
+alphabet = string.digits + string.ascii_letters + string.punctuation + string.whitespace
 
 
 def prod(x):
@@ -353,3 +357,17 @@ def rsa_encrypt(m, a, n):
 def rsa_decrypt(c, b, n):
     """Generate clear given cipher c, exponent b, and modulus n."""
     return powermod(c, b, n)
+
+def string_encode(m):
+    """Encode the string m to numeric value. This will need to be chunked to digits(,n) for RSA-crypto."""
+    global alphabet    
+    r = []
+    for c in list(m):
+        r.append(str(alphabet.index(c)).zfill(2))
+    return long("".join(r))
+
+def string_decode(c):
+    """Decode the string represented by numeric value c."""
+    global alphabet
+    return "".join([alphabet[k] for k in digits(c,100,rev=True)])
+
