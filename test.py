@@ -87,6 +87,15 @@ class MyTests(unittest.TestCase):
                 mp = rsa_decrypt(c, d['b'], d['n'])
                 self.assertEqual(m, mp)
 
+    def test_prime(self):
+        """Test if prime_generator actually generates prime numbers."""
+        for i in range(15):
+            j = 2*i
+            print "%d:\t" % (j,),
+            n = prime_generator(j, k=100)
+            print n
+            self.assertTrue(fprimality(n, k=1000))
+
 
 if "__main__" == __name__:
     unittest.main()

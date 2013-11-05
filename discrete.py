@@ -1,6 +1,7 @@
 from math import factorial
 from operator import mul
 from some_primes import SomePrimes
+from volny_magic import random_length
 import copy
 import numbers
 import string
@@ -332,11 +333,11 @@ class Rational():
         return self.n, self.d
 
 
-def generate_rsa():
+def generate_rsa(plen=100, qlen=200):
     """Generate RSA public and private key information."""
     global some_primes
-    p = random.choice(SomePrimes)
-    q = random.choice(SomePrimes)
+    p = prime_generator(plen, k=100) #random.choice(SomePrimes)
+    q = prime_generator(qlen, k=100) #random.choice(SomePrimes)
     n = p * q
     phi = (p-1)*(q-1) 
     while 1:
@@ -358,6 +359,7 @@ def rsa_decrypt(c, b, n):
     """Generate clear given cipher c, exponent b, and modulus n."""
     return powermod(c, b, n)
 
+
 def string_encode(m):
     """Encode the string m to numeric value. This will need to be chunked to digits(,n) for RSA-crypto."""
     global alphabet    
@@ -366,8 +368,49 @@ def string_encode(m):
         r.append(str(alphabet.index(c)).zfill(2))
     return long("".join(r))
 
+
 def string_decode(c):
     """Decode the string represented by numeric value c."""
     global alphabet
-    return "".join([alphabet[k] for k in digits(c,100,rev=True)])
+    return "".join([alphabet[k] for k in digits(c, 100, rev=True)])
 
+
+def prime_generator(x, k=5):
+    """Generate a prime number of length x"""
+    n = random_length(x)
+    if not n & 1:
+        n += 1
+    while not fprimality(n, k):
+        n += 2
+    return n
+
+
+def dprimality(n):
+    """Deterministric primality test from http://stackoverflow.com/a/15285588"""
+    if n < 2:
+        return False
+    if n in SomePrimes:
+        return True
+    for i in xrange(3, long(n**0.5)+1, 2):
+        if n % i == 0:
+            print n, i
+            return False
+    return True
+
+
+def fprimality(p, k):
+    """Use Fermat's Little Theorem to test primality for random cases k."""
+    #print n, k
+    if p < 2:
+        return False
+    if p in SomePrimes:
+        return True
+    for n in (2, 3, 5, 7, 11):
+        if not p % n:
+            return False
+    while k > 0:
+        a = random.randrange(2, p)
+        if powermod(a, p-1, p) != 1:
+            return False
+        k -= 1
+    return True

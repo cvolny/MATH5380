@@ -28,7 +28,7 @@ def median(x):
 
 def random_length(n):
     """Return a string of digits of n-length."""
-    v = str(random.randint(1,9)) + ''.join(["{0}".format(random.randint(0,9)) for n in range(1,n)])
+    v = str(random.randint(1, 9)) + ''.join(["{0}".format(random.randint(0, 9)) for n in range(1, n)])
     l = long(v)
     if l < sys.maxint - 1:
         return int(l)
