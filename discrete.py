@@ -1,6 +1,5 @@
 from math import factorial
 from operator import mul
-from some_primes import SomePrimes
 from volny_magic import random_length
 import copy
 import numbers
@@ -379,7 +378,7 @@ def dprimality(n):
     """Deterministric primality test from http://stackoverflow.com/a/15285588"""
     if n < 2:
         return False
-    if n in SomePrimes:
+    if n in (2, 3, 5, 7, 11, 13):
         return True
     for i in xrange(3, long(n**0.5)+1, 2):
         if n % i == 0:
@@ -393,7 +392,7 @@ def fprimality(p, k):
     #print n, k
     if p < 2:
         return False
-    if p in SomePrimes:
+    if p in (2, 3, 5, 7, 11, 13):
         return True
     for n in (2, 3, 5, 7, 11):
         if not p % n:
