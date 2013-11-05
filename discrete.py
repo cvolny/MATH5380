@@ -25,7 +25,7 @@ def digits(x, b, rev=False):
     """Returns list of digits in base-b from given base-10 number x."""
     v = []                          # results
     while x > 0:                    # loop so long as x is positive
-        x,d = divmod(x,b)           # d <- x mod b, x <- x int-div b
+        x, d = divmod(x, b)           # d <- x mod b, x <- x int-div b
         v.append(d)
     return v[::-1] if rev else v    # reverse if specified and return
 
@@ -346,18 +346,8 @@ def generate_rsa(plen=100, qlen=200):
             break
     b, c = egcd(a, phi)
     if b < 0:
-        b = b % phi
+        b %= phi
     return {'a': a, 'b': b, 'p': p, 'q': q, 'n': n, 'phi': phi, }
-
-
-def rsa_encrypt(m, a, n):
-    """Generate cipher given message m, exponent a, and modulus n."""
-    return powermod(m, a, n)
-
-
-def rsa_decrypt(c, b, n):
-    """Generate clear given cipher c, exponent b, and modulus n."""
-    return powermod(c, b, n)
 
 
 def string_encode(m):
@@ -376,7 +366,7 @@ def string_decode(c):
 
 
 def prime_generator(x, k=5):
-    """Generate a prime number of length x"""
+    """Generate a prime number of length x relying on k passes of Fermat's Little Theorem test."""
     n = random_length(x)
     if not n & 1:
         n += 1
@@ -414,3 +404,23 @@ def fprimality(p, k):
             return False
         k -= 1
     return True
+
+
+def rsa_crypt(msg, a, n, encode):
+    """RSA Encrypt msg using public key (a, n). Encode msg using encoding (callable)."""
+    emsg = encode(msg)
+    mblocks = digits(emsg, n)
+    cblocks = []
+    for mblock in mblocks:
+        cblocks.append(powermod(mblock, *(a, n)))
+    return horner(cblocks, n)
+
+
+def rsa_decrypt(cipher, b, n, decode):
+    """RSA Decrpyt cipher using private key (b, n). Decode that msg using decoding (callable)."""
+    cblocks = digits(cipher, n,)
+    mblocks = []
+    for cblock in cblocks:
+        mblocks.append(powermod(cblock, *(b, n)))
+    emsg = horner(mblocks, n)
+    return decode(emsg)
