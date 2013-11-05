@@ -92,7 +92,6 @@ class MyTests(unittest.TestCase):
         for i in range(15):
             j = 2*i
             n = prime_generator(j, k=100)
-            print n
             self.assertTrue(fprimality(n, k=1000))
 
 
