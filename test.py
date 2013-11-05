@@ -83,8 +83,8 @@ class MyTests(unittest.TestCase):
             d = generate_rsa()
             nlen = len(str(d['n']))
             for m in [random_length(nlen-1) for y in range(5)]:
-                c = rsa_encrypt(m, d['a'], d['n'])
-                mp = rsa_decrypt(c, d['b'], d['n'])
+                c = powermod(m, d['a'], d['n'])
+                mp = powermod(c, d['b'], d['n'])
                 self.assertEqual(m, mp)
 
     def test_prime(self):
