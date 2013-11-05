@@ -91,7 +91,6 @@ class MyTests(unittest.TestCase):
         """Test if prime_generator actually generates prime numbers."""
         for i in range(15):
             j = 2*i
-            print "%d:\t" % (j,),
             n = prime_generator(j, k=100)
             print n
             self.assertTrue(fprimality(n, k=1000))
