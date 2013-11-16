@@ -421,3 +421,57 @@ def rsa_decrypt(cipher, b, n, decode):
         mblocks.append(powermod(cblock, *(b, n)))
     emsg = horner(mblocks, n)
     return decode(emsg)
+
+
+class Graph(dict):
+    """Class to reprsent undirected graphs as a dictionary."""
+
+    def add_node(self, k):
+        """Add node with no edges to the graph. Throws KeyError if node already exists."""
+        if k in self:
+            raise KeyError("Node %s already defined." % k)
+        self[k] = {}
+
+    def del_node(self, k):
+        """Delete node and all edges associated from graph."""
+        if not k in self:
+            raise KeyError("Node %s not defined." %k)
+        del self[k]
+        for kp in self:
+            for kpp in self[kp]:
+                if kpp == k:
+                    del self[kp][kpp]
+
+    def nodes(self):
+        """Return a list of nodes."""
+        return self.keys()
+
+    def neighbors(self, k):
+        """Return a list of neighbors to node k."""
+        return self[k].keys()
+
+    def degree(self, k):
+        """Return the degree of the node k."""
+        return sum(self[k].values())
+
+    def add_edge(self, k1, k2, c=1):
+        """Add an edge (or c edges) between nodes k1 and k2."""
+        c += 0 if not k2 in self[k1] else self[k1][k2]
+        self[k1][k2] = c
+        self[k2][k1] = c
+
+    def del_edge(self, k1, k2, c=1):
+        """Delete an edge (or c edges) between nodes k1 and k2."""
+        if c > self[k1][k2]:
+            raise ValueError("Cannot remove %d edges between %s and %s; only %d exist." % (c, k1, k2, self[k1][k2]))
+        if self[k1][k2] - c:
+            self[k1][k2] -= c
+            self[k2][k1] -= c
+        else:
+            del self[k1][k2]
+            del self[k2][k1]
+
+    def are_neighbors(self, k1, k2):
+        """Determine whether nodes k1 and k2 are connected."""
+        return k1 in self[k2]
+

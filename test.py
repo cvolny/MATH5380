@@ -94,6 +94,25 @@ class MyTests(unittest.TestCase):
             n = prime_generator(j, k=100)
             self.assertTrue(fprimality(n, k=1000))
 
+    def test_graph(self):
+        gp = {
+            1: {2: 1, 5: 1},
+            2: {1: 1, 3: 1, 4: 1, 6: 1},
+            3: {2: 1, 7: 2},
+            4: {2: 1},
+            5: {1: 1, 5: 1, 6: 1},
+            6: {2: 1, 5: 1},
+            7: {3: 2},
+            8: {}}
+        g = graph()
+        for k in gp.keys():
+            g.add_node(k)
+        for k, v in gp.iteritems():
+            for kp, w in v.iteritems():
+                if not g.are_neighbors(k, kp):  # double count otherwise...
+                    g.add_edge(k, kp, w)
+        self.assertEqual(g, gp)
+
 
 if "__main__" == __name__:
     unittest.main()
