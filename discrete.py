@@ -392,9 +392,7 @@ def fprimality(p, k):
     #print n, k
     if p < 2:
         return False
-    if p in (2, 3, 5, 7, 11, 13):
-        return True
-    for n in (2, 3, 5, 7, 11):
+    for n in (2, 3, 5, 7, 11, 13):
         if not p % n:
             return False
     while k > 0:
