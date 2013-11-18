@@ -436,11 +436,9 @@ class Graph(dict):
         """Delete node and all edges associated from graph."""
         if not k in self:
             raise KeyError("Node %s not defined." %k)
+        for neighbor in self[k].keys():
+            del self[neighbor][k]
         del self[k]
-        for kp in self:
-            for kpp in self[kp]:
-                if kpp == k:
-                    del self[kp][kpp]
 
     def nodes(self):
         """Return a list of nodes."""
