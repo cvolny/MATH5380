@@ -82,7 +82,7 @@ class MyTests(unittest.TestCase):
         for x in range(3):
             d = generate_rsa()
             nlen = len(str(d['n']))
-            for m in [random_length(nlen-1) for y in range(5)]:
+            for m in [random_length(nlen - 1) for y in range(5)]:
                 c = powermod(m, d['a'], d['n'])
                 mp = powermod(c, d['b'], d['n'])
                 self.assertEqual(m, mp)
@@ -104,7 +104,7 @@ class MyTests(unittest.TestCase):
             6: {2: 1, 5: 1},
             7: {3: 2},
             8: {}}
-        g = graph()
+        g = Graph()
         for k in gp.keys():
             g.add_node(k)
         for k, v in gp.iteritems():
@@ -112,6 +112,23 @@ class MyTests(unittest.TestCase):
                 if not g.are_neighbors(k, kp):  # double count otherwise...
                     g.add_edge(k, kp, w)
         self.assertEqual(g, gp)
+
+    def test_path(self):
+        g = Graph()
+        g.update({
+            1: {2: 1, 5: 1},
+            2: {1: 1, 3: 1, 4: 1, 6: 1},
+            3: {2: 1, 7: 2},
+            4: {2: 1},
+            5: {1: 1, 5: 5, 6: 1},
+            6: {2: 1, 5: 1},
+            7: {3: 2}})
+        self.assertEqual(graph_epath(g), [3, 7, 3, 2, 6, 5, 5, 5, 5, 5, 5, 1, 2, 4])
+        g.del_edge(5, 5, 5)
+        self.assertEqual(graph_epath(g), [3, 7, 3, 2, 6, 5, 1, 2, 4])
+        g.add_node(8)
+        g.add_edge(1, 8)
+        self.assertRaises(ValueError, graph_epath, g)
 
 
 if "__main__" == __name__:

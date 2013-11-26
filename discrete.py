@@ -452,6 +452,16 @@ class Graph(dict):
         """Return the degree of the node k."""
         return sum(self[k].values())
 
+    def extended_degree(self, k):
+        """Return the degree of the node k, counting loops as a degree of 2."""
+        s = 0
+        for n in self.neighbors(k):
+            if k == n:
+                s += 2 * self[k][n]
+            else:
+                s += self[k][n]
+        return s
+
     def add_edge(self, k1, k2, c=1):
         """Add an edge (or c edges) between nodes k1 and k2."""
         c += 0 if not k2 in self[k1] else self[k1][k2]
@@ -464,12 +474,71 @@ class Graph(dict):
             raise ValueError("Cannot remove %d edges between %s and %s; only %d exist." % (c, k1, k2, self[k1][k2]))
         if self[k1][k2] - c:
             self[k1][k2] -= c
-            self[k2][k1] -= c
+            if not k1 == k2:
+                self[k2][k1] -= c
         else:
             del self[k1][k2]
-            del self[k2][k1]
+            if not k1 == k2:
+                del self[k2][k1]
 
     def are_neighbors(self, k1, k2):
         """Determine whether nodes k1 and k2 are connected."""
         return k1 in self[k2]
+
+    def del_loops(self):
+        """Eliminate loops from the graph."""
+        for k in self.nodes():
+            if k in self[k].keys():
+                self.del_edge(k, k, self[k][k])
+
+
+def graph_epath_exists(g):
+    """Determine if an Eulerian path exists in graph g. Returns odd degree nodes as a list."""
+    odds = []
+    for v in g.nodes():
+        if 1 & g.extended_degree(v):
+            odds.append(v)
+    c = len(odds)
+    if not c in (0, 2):
+        raise ValueError("No Eulerian path exists in graph. %d nodes have odd degrees." % c)
+    return odds
+
+
+def graph_epath(g):
+    """Find an Eulerian path, with loops, in graph g if one exists."""
+    gp = copy.deepcopy(g)
+    odds = graph_epath_exists(gp)
+    r = gp.nodes()
+    if odds:
+        c, f = odds
+    else:
+        c, f = r[0], r[-1]
+    p = [c]
+    while not c == f:
+        ns = gp.neighbors(c)
+        n = f if f in ns else ns[0]
+        gp.del_edge(c, n)
+        p.append(n)
+        c = n
+    while r:
+        if not c:
+            c = [x for x in r if x in p][0]
+        if gp.degree(c) == 0:
+            r.remove(c)
+            c = None
+        else:
+            if gp.are_neighbors(c, c):
+                p = p[:p.index(c)] + ([c] * g[c][c]) + p[p.index(c):]
+                gp.del_edge(c, c, g[c][c])
+            n = gp.neighbors(c)[0]
+            gp.del_edge(c, n)
+            p.insert(p.index(c), n)
+            c = n
+    return p
+
+
+
+
+
+
 
