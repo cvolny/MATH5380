@@ -680,3 +680,102 @@ def planar_parse(seq):
         else:
             raise ValueError("Invalid planar code character '%s', not a 1 or 0." % s)
     return t
+
+
+# provided by instructor
+class graph(dict):
+
+    def add_node(self, x):
+        if x in self:
+            raise Exception("node named %s already exists" % x)
+        else:
+            self[x] = {}
+
+    def del_node(self, x):
+        for y in self.neighbors(x):
+            del self[y][x]
+        del self[x]
+
+    def nodes(self):
+        return self.keys()
+
+    def neighbors(self, x):
+        return [y for y in self[x] if y != x]
+
+    def degree(self, x):
+        d = sum(self[x].values())
+        if x in self[x]:
+            d += self[x][x]
+        return d
+
+    def add_edge(self, x, y):
+        try:
+            self[x][y] += 1
+            if y != x:
+                self[y][x] += 1
+        except KeyError:
+            self[x][y] = self[y][x] = 1
+
+    def del_edge(self, x, y):
+        if y not in self[x]:
+            raise Exception("nodes %s and %s are not neighbors" %
+                            (x, y))
+        elif self[x][y] == 1:
+            del self[x][y]
+            if y != x:
+                del self[y][x]
+        else:
+            self[x][y] -= 1
+            if y != x:
+                self[y][x] -= 1
+
+    def are_neighbors(self, x, y):
+        return y in self[x] and y != x
+
+
+def eulerian_path(g):
+    h = graph()
+    h.update(g)
+    v = h.nodes()
+    t = [x for x in v if h.degree(x) % 2 == 1]
+    if len(t) > 2:
+        raise Exception("no eulerian path exists",
+                        [(x, h.degree(x)) for x in t])
+    elif len(t) == 2:
+        w = [t[0]]
+    else:
+        w = [v[0]]
+    i = 0
+    while i < len(w):
+        x = w[i]
+        if h[x]:
+            i += 1
+        else:
+            C = [x]
+            while h[x]:
+                if x in h[x]:
+                    y = x
+                else:
+                    y = h.neighbors(x)[0]
+                C.append(y)
+                h.del_edge(x, y)
+                x = y
+            w[i:i + 1] = C
+    return w
+
+
+def dfs(g, r):
+    t = graph()
+    t.add_node(r)
+    v = [r]
+    while v:
+        x = v[-1]
+        U = [y for y in g[x] if y not in t]
+        if U:
+            y = U[0]
+            t.add_node(y)
+            t.add_edge(x, y)
+            v.append(y)
+        else:
+            v.pop()
+    return t
