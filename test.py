@@ -79,7 +79,7 @@ class MyTests(unittest.TestCase):
 
     def test_rsa(self):
         """Test case for classroom RSA functions. Generates 3 pairs and runs 5 tests each."""
-        for x in range(3):
+        for x in range(1):
             d = generate_rsa()
             nlen = len(str(d['n']))
             for m in [random_length(nlen - 1) for y in range(5)]:
@@ -129,6 +129,56 @@ class MyTests(unittest.TestCase):
         g.add_node(8)
         g.add_edge(1, 8)
         self.assertRaises(ValueError, graph_epath, g)
+
+    def test_tree(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(t, dict({x: [x + 1] for x in range(n)}.items() + {n: []}.items()))
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(0)  # 2
+        t.add_leaf(0)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(2)  # 5
+        t.add_leaf(4)  # 6
+        self.assertEqual(t, {0: [1, 2, 3], 2: [4, 5], 1: [], 3: [], 4: [6], 5: [], 6: []})
+
+    def test_prufer(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(prufer(t), range(n - 1, 0, -1))
+        self.assertEqual(prufer_parse(range(n - 1, 0, -1)), t)
+        p = [0, 0, 2, 4, 2]
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(0)  # 2
+        t.add_leaf(0)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(2)  # 5
+        t.add_leaf(4)  # 6
+        self.assertEqual(prufer(t), p)
+        self.assertEqual(prufer_parse(p), t)
+
+    def test_planar(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(planar(t), [1] * n + [0] * n)
+        self.assertEqual(planar_parse([1] * n + [0] * n), t)
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(1)  # 2
+        t.add_leaf(2)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(0)  # 5
+        t.add_leaf(5)  # 6
+        self.assertEqual("".join([str(x) for x in planar(t)]), "111010001100")
+        self.assertEqual(planar_parse("111010001100"), t)
 
 
 if "__main__" == __name__:

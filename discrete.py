@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from math import factorial
 from operator import mul
 from volny_magic import random_length
+import bisect
 import copy
 import numbers
 import string
@@ -424,7 +426,7 @@ def rsa_decrypt(cipher, b, n, decode):
 
 
 class Graph(dict):
-    """Class to reprsent undirected graphs as a dictionary."""
+    """Class to represent undirected graphs as a dictionary."""
 
     def add_node(self, k):
         """Add node with no edges to the graph. Throws KeyError if node already exists."""
@@ -491,6 +493,35 @@ class Graph(dict):
             if k in self[k].keys():
                 self.del_edge(k, k, self[k][k])
 
+    def simplify(self):
+        for node in self.nodes():
+            for neighbor, count in self[node].item():
+                if node == neighbor:
+                    self.del_edge(node, node, count)
+                else:
+                    self[node][neighbor] = 1
+
+    def treeify(self):
+        """ Perform in-place conversion to a spanning tree."""
+        self.simplify()
+        trees = []
+        for node in self.nodes():
+            t = None
+            for tree in trees:
+                if node in tree:
+                    t = tree
+                    break
+            else:
+                t = []
+            for neighbor in self.neighbors(node):
+                if neighbor in t:
+                    del self[node][neighbor]
+                    del self[neighbor][node]
+                for tree in trees:
+                    if neighbor in tree:
+                        t += tree
+                        trees.remove(tree)
+
 
 def graph_epath_exists(g):
     """Determine if an Eulerian path exists in graph g. Returns odd degree nodes as a list."""
@@ -537,8 +568,115 @@ def graph_epath(g):
     return p
 
 
+class Tree(dict):
+    """Dictionary represenation of a tree with sequential integers for keys and a child list as values."""
+
+    def __init__(self):
+        """Initialize with a single root element with label 0."""
+        self[0] = []
+        self.next_label = 1
+
+    def add_leaf(self, parent):
+        """Add a leaf under the specified parent node."""
+        label = self.next_label
+        if not parent in self.keys():
+            raise ValueError("Parent '%s' does not exist." % parent)
+        self[parent].append(label)
+        self[label] = []
+        self.next_label += 1
+        return label
+
+    def leaves(self):
+        """Return a list of nodes with no children (leaves)."""
+        r = []
+        for node, children in self.items():
+            if not children:
+                r.append(node)
+        return r
+
+    def children(self, node):
+        """Returns the list of children of the specified node."""
+        return self[node]
+
+    def parent(self, node):
+        """Resolve the parent of the specified node."""
+        if not node in self.keys():
+            raise ValueError("Node '%s' does not exist." % node)
+        for n, c in self.items():
+            if node in c:
+                return n
+
+    def prune(self, leaf):
+        """Prune a leaf from the tree."""
+        if self[leaf]:
+            raise ValueError("Node '%s' has children '[%s]' (not a leaf)." % (leaf, ",".join(self[leaf])))
+        self[self.parent(leaf)].remove(leaf)
+        del self[leaf]
 
 
+def prufer(t):
+    """Generate Prüfer code for given simple graph g."""
+    t = copy.deepcopy(t)
+    seq = []
+    leaves = True
+    while leaves:
+        leaves = t.leaves()
+        leaf = min(leaves)
+        if leaf == 0:
+            break
+        parent = t.parent(leaf)
+        seq.append(parent)
+        t.prune(leaf)
+    return seq[:-1]
 
 
+def prufer_parse(seq):
+    top = []
+    seq.append(0)
+    n = len(seq) + 1
+    leaves = range(n)
+    for i in range(n):
+        for j in leaves:
+            if not j in seq[i:]:
+                top.append(j)
+                leaves.remove(j)
+    top.pop()
+    t = Tree()
+    for i in range(1, n):
+        t.add_leaf(0)
+    t[0] = []
+    for i in range(n - 1)[::-1]:
+        bisect.insort(t[seq[i]], top[i])
+    return t
 
+
+def planar(t):
+    r = []
+    v = [0]
+    s = [0]
+    c = 0
+    while s:
+        todo = [x for x in t.children(c) if not x in v]
+        if todo:
+            r.append(1)
+            s.append(c)
+            c = min(todo)
+            v.append(c)
+        else:
+            r.append(0)
+            c = s.pop()
+    return r[:-1]
+
+
+def planar_parse(seq):
+    t = Tree()
+    p = [0]
+    for s in seq:
+        s = str(s)
+        if s == "1":
+            p.append(t.add_leaf(p[-1]))
+        elif s == "0":
+            p.pop()
+        else:
+            raise ValueError("Invalid planar code character '%s', not a 1 or 0." % s)
+    return t
