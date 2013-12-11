@@ -688,11 +688,10 @@ class Tree(dict):
 
 
 def prufer(t):
-    """Generate Prüfer code for given simple graph g."""
+    """Generate Prüfer code for a labeled Tree t."""
     t = copy.deepcopy(t)
     seq = []
-    leaves = True
-    while leaves:
+    while 1:
         leaves = t.leaves()
         leaf = min(leaves)
         if leaf == 0:
@@ -704,6 +703,7 @@ def prufer(t):
 
 
 def prufer_parse(seq):
+    """ Parse Prüfer code and generate a labeled Tree. """
     top = []
     seq.append(0)
     n = len(seq) + 1
@@ -724,6 +724,7 @@ def prufer_parse(seq):
 
 
 def planar(t):
+    """ Generate planar code for a Tree t. """
     r = []
     v = [0]
     s = [0]
@@ -742,6 +743,7 @@ def planar(t):
 
 
 def planar_parse(seq):
+    """ Parse planar code to generate an arbitrarily labeled tree (arbitrary in that label info is lost in planar encoding)"""
     t = Tree()
     p = [0]
     for s in seq:
