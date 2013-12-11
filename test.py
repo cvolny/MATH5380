@@ -9,30 +9,30 @@ class MyTests(unittest.TestCase):
     
     def test_bases(self):
         """Test cases for digits and horner functions against some values."""
-        for x,b in [(10,2), (1000,3), (100000,20)]:
-            self.assertEqual(x, horner(digits(x,b),b))
-            self.assertEqual(x, horner(digits(x,b,rev=True),b,rev=True))
+        for x, b in [(10, 2), (1000, 3), (100000, 20)]:
+            self.assertEqual(x, horner(digits(x, b), b))
+            self.assertEqual(x, horner(digits(x, b, rev=True), b, rev=True))
     
     def test_factorial(self):
         """Test cases for factorial functions against prod([1,2,...,i,])."""
         for i in [0, 1, 10, 100, 1000]:
-            x = prod(range(1,i+1))
+            x = prod(range(1, i + 1))
             self.assertEqual(x, ifactorial(i))
             self.assertEqual(x, rfactorial(i))
     
     def test_binomial(self):
         """Test cases for binomial coefficient functions against precomputed values."""
-        a = {(10,0): 1, (10,10): 1, (10,3): 120, (100,4): 3921225}
-        for n,k in a.keys():
-            v = a[(n,k)]
-            self.assertEqual(v, binomial(n,k))
-            self.assertEqual(v, ibinomial(n,k))
-            self.assertEqual(v, rbinomial(n,k))
+        a = {(10, 0): 1, (10, 10): 1, (10, 3): 120, (100, 4): 3921225}
+        for n, k in a.keys():
+            v = a[(n, k)]
+            self.assertEqual(v, binomial(n, k))
+            self.assertEqual(v, ibinomial(n, k))
+            self.assertEqual(v, rbinomial(n, k))
     
     def test_gcd(self):
         """Test cases for gcd function. Zero case and some static values."""
-        self.assertEqual(12341234, gcd(12341234,0))
-        self.assertEqual(100*10*55, gcd(100*10*55, 200*10*55))
+        self.assertEqual(12341234, gcd(12341234, 0))
+        self.assertEqual(100 * 10 * 55, gcd(100 * 10 * 55, 200 * 10 * 55))
 
     def test_lcm(self):
         """Test case for lcm function. Zero case and random values."""
@@ -73,7 +73,7 @@ class MyTests(unittest.TestCase):
         for i in range(15):
             a, b = random_length_pair(10)
             s, t = regcd(a, b)
-            self.assertEqual(gcd(a, b), s*a+t*b)
+            self.assertEqual(gcd(a, b), s * a + t * b)
             sp, tp = egcd(a, b)
             self.assertEqual((sp, tp), (s, t))
 
@@ -90,7 +90,7 @@ class MyTests(unittest.TestCase):
     def test_prime(self):
         """Test if prime_generator actually generates prime numbers."""
         for i in range(15):
-            j = 2*i
+            j = 2 * i
             n = prime_generator(j, k=100)
             self.assertTrue(fprimality(n, k=1000))
 

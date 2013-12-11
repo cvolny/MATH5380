@@ -68,7 +68,7 @@ def rfactorial(n):
     return n * rfactorial(n-1)
 
 
-def binomial(n,k):
+def binomial(n, k):
     """Calculate the binomial coefficient of n choose k.
         result = n! / (k! * (n-k)!),
         using math.factorial(x)."""
@@ -81,7 +81,7 @@ def binomial(n,k):
     return factorial(n) / (factorial(k) * factorial(n-k))
 
 
-def ibinomial(n,k):
+def ibinomial(n, k):
     """Calculate the binomial coefficient of n choose k iterativly.
         result = (n)/(k) * (n-1)/(k-1) * (n-2)/(k-2) * ... * (n-k)"""
     
@@ -98,7 +98,7 @@ def ibinomial(n,k):
     return p
 
 
-def rbinomial(n,k):
+def rbinomial(n, k):
     """Calculate the binomial coefficient of n choose k recursively.
         result = (n)/(k) * rbinomial(n-1,k-1),
         result = 1 if k == 0"""
@@ -133,7 +133,7 @@ def gcd(a, b, count=False):
     return a
 
 
-def count_gcd(a,b):
+def count_gcd(a, b):
     """Returns just the count from gcd(*,*,True)"""
     a, c = gcd(a, b, count=True)
     return c
@@ -336,13 +336,12 @@ class Rational():
 
 def generate_rsa(plen=100, qlen=200):
     """Generate RSA public and private key information."""
-    global some_primes
-    p = prime_generator(plen, k=100) #random.choice(SomePrimes)
-    q = prime_generator(qlen, k=100) #random.choice(SomePrimes)
+    p = prime_generator(plen, k=100)
+    q = prime_generator(qlen, k=100)
     n = p * q
-    phi = (p-1)*(q-1) 
+    phi = (p - 1) * (q - 1)
     while 1:
-        a = random.randint(1, n-1)
+        a = random.randint(1, n - 1)
         if gcd(phi, a) == 1:
             break
     b, c = egcd(a, phi)
