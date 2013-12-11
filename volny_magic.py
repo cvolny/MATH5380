@@ -26,22 +26,7 @@ def median(x):
     return (s[l / 2] + s[l / 2 - 1]) / 2.0
 
 
-def random_length(n):
-    """Return a string of digits of n-length."""
-    v = str(random.randint(1, 9)) + ''.join(["{0}".format(random.randint(0, 9)) for n in range(1, n)])
-    l = long(v)
-    if l < sys.maxint - 1:
-        return int(l)
-    return l
-
-
-def random_length_pair(n):
-    """Returns a pair of numbers of length-n"""
-    return random_length(n), random_length(n)
-
-
 # TODO: figure out why these didn't work...
-
 def chaining_decorator(f):
     """Use this decorator in metaclass to implement method chaining quickly."""
     def decorated(*args, **kwargs):

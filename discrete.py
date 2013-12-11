@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from math import factorial
 from operator import mul
-from volny_magic import random_length
 import bisect
 import copy
+import math
 import numbers
 import string
 import sys
 import random
+import unittest
 
 
 # use this for large value testing in rfatorial(n) and rbinomial(n,k)
@@ -20,6 +21,20 @@ alphabet = string.digits + string.ascii_letters + string.punctuation + string.wh
 def prod(x):
     """Reduce elements of list using mul operator; like sum() for multiplication."""
     return reduce(mul, x, 1)
+
+
+def random_length(n):
+    """Return a string of digits of n-length."""
+    v = str(random.randint(1, 9)) + ''.join(["{0}".format(random.randint(0, 9)) for n in range(1, n)])
+    l = long(v)
+    if l < sys.maxint - 1:
+        return int(l)
+    return l
+
+
+def random_length_pair(n):
+    """Returns a pair of numbers of length-n"""
+    return random_length(n), random_length(n)
 
 
 def digits(x, b, rev=False):
@@ -332,6 +347,65 @@ class Rational():
     def as_integer_ratio(self):
         """Return numerator and denominator as tuple (type duck (big)float)."""
         return self.n, self.d
+
+
+class Vector(list):
+    """Class to represent vectors of arbitrary dimension."""
+
+    @staticmethod
+    def versor(i, d):
+        """static method to generate the versor in dimension-i in a d-dimension system."""
+        r = [0] * d
+        r[i - 1] = 1
+        return Vector(r)
+
+    def dim(self):
+        """returns the dimensions with which this vector exists."""
+        return len(self)
+
+    def norm(self):
+        """returns the norm or "length" of the vector."""
+        return math.sqrt(sum([x ** 2 for x in self]))
+
+    def unit(self):
+        """returns the unit vector of the instance. u* = v / ||v||"""
+        n = self.norm()
+        return Vector([x / n for x in self])
+
+    def __add__(self, other):
+        """addition operator for vectors of same dimension."""
+        # TODO: detect longer vector and extend shorter to fit, then perform addition.
+        if self.dim() == other.dim():
+            return Vector([self[i] + other[i] for i in range(self.dim())])
+        raise ValueError("Dimension mismatch! {} != {}".format(self.dim(), other.dim()))
+
+    def __sub__(self, other):
+        """"subtraction operator relying on negation of elements and addition operator."""
+        return self + [x * -1 for x in other]
+
+    def __mul__(self, other):
+        """"multiplication operator for multiplying the unit vector's components by a scalar value."""
+        n = self.norm() * other
+        return Vector([self.unit()[i] * n for i in range(self.dim())])
+
+    def __div__(self, other):
+        """"division operator for dividing the unit vector's components by a scalar value."""
+        n = self.norm() * other
+        return Vector([self.unit()[i] / n for i in range(self.dim())])
+
+    def distance_to(self, other):
+        """calculate the distance between two point vectors."""
+        if self.dim() == other.dim():
+            return math.sqrt(sum([(self[x] - other[x]) ** 2 for x in range(self.dim())]))
+        raise ValueError("Dimension mismatch! {} != {}".format(self.dim(), other.dim()))
+
+    def __str__(self):
+        """return a string representation of the vector."""
+        return "<{}>".format(",".join([str(x) for x in self]))
+
+    def __repr__(self):
+        """return a console compabitible string representation, relying on str."""
+        return str(self)
 
 
 def generate_rsa(plen=100, qlen=200):
@@ -778,3 +852,184 @@ def dfs(g, r):
         else:
             v.pop()
     return t
+
+
+class MyTests(unittest.TestCase):
+    """Unit tests for this project."""
+
+    def test_bases(self):
+        """Test cases for digits and horner functions against some values."""
+        for x, b in [(10, 2), (1000, 3), (100000, 20)]:
+            self.assertEqual(x, horner(digits(x, b), b))
+            self.assertEqual(x, horner(digits(x, b, rev=True), b, rev=True))
+
+    def test_factorial(self):
+        """Test cases for factorial functions against prod([1,2,...,i,])."""
+        for i in [0, 1, 10, 100, 1000]:
+            x = prod(range(1, i + 1))
+            self.assertEqual(x, ifactorial(i))
+            self.assertEqual(x, rfactorial(i))
+
+    def test_binomial(self):
+        """Test cases for binomial coefficient functions against precomputed values."""
+        a = {(10, 0): 1, (10, 10): 1, (10, 3): 120, (100, 4): 3921225}
+        for n, k in a.keys():
+            v = a[(n, k)]
+            self.assertEqual(v, binomial(n, k))
+            self.assertEqual(v, ibinomial(n, k))
+            self.assertEqual(v, rbinomial(n, k))
+
+    def test_gcd(self):
+        """Test cases for gcd function. Zero case and some static values."""
+        self.assertEqual(12341234, gcd(12341234, 0))
+        self.assertEqual(100 * 10 * 55, gcd(100 * 10 * 55, 200 * 10 * 55))
+
+    def test_lcm(self):
+        """Test case for lcm function. Zero case and random values."""
+        self.assertEqual(0, lcm(5000, 0))
+        for i in range(15):
+            a, b = random.randint(i, 500), random.randint(i, 500)
+            self.assertEqual(a * b / gcd(a, b), lcm(a, b))
+
+    def test_rational(self):
+        """Test case for Rational class. Static tests and random test."""
+        self.assertEqual(5, Rational(5, 2) * 2)
+        self.assertEqual(Rational(5, 2), Rational(1, 2) * 5)
+        self.assertEqual(Rational(10, 5), Rational(2) * Rational(3) / Rational(3))
+        self.assertEqual(Rational(97, 10), Rational(13, 2) + Rational(16, 5))
+        self.assertEqual(5, int(Rational(0) + Rational(10, 2)))
+        for i in range(15):
+            r = random.uniform(i, 500)
+            self.assertEqual(r, float(Rational(r) + Rational(1, 1) - Rational(2, 2)))
+
+    def test_powerset(self):
+        """Test case for powerset generator. Static and zero test."""
+        foo = [[], [1], [5], [1, 5], [7], [1, 7], [5, 7], [1, 5, 7]]
+        self.assertEqual(foo, [list(s) for s in powerset([1, 5, 7])])
+        self.assertEqual([[]], [list(s) for s in powerset([])])
+
+    def test_powermod(self):
+        """Test case for iterative vs. powermod results."""
+        for i in range(15):
+            a, b = random_length_pair(3)
+            self.assertEqual(powermod(a, b), rpowermod(a, b))
+        for i in range(15):
+            a, b = random_length_pair(10)
+            for j in range(2, 15):
+                self.assertEqual(powermod(a, b, j), rpowermod(a, b, j))
+
+    def test_egcd(self):
+        """Test case for random pairs against extended gcd function."""
+        for i in range(15):
+            a, b = random_length_pair(10)
+            s, t = regcd(a, b)
+            self.assertEqual(gcd(a, b), s * a + t * b)
+            sp, tp = egcd(a, b)
+            self.assertEqual((sp, tp), (s, t))
+
+    def test_rsa(self):
+        """Test case for classroom RSA functions. Generates 3 pairs and runs 5 tests each."""
+        for x in range(1):
+            d = generate_rsa()
+            nlen = len(str(d['n']))
+            for m in [random_length(nlen - 1) for y in range(5)]:
+                c = powermod(m, d['a'], d['n'])
+                mp = powermod(c, d['b'], d['n'])
+                self.assertEqual(m, mp)
+
+    def test_prime(self):
+        """Test if prime_generator actually generates prime numbers."""
+        for i in range(15):
+            j = 2 * i
+            n = prime_generator(j, k=100)
+            self.assertTrue(fprimality(n, k=1000))
+
+    def test_graph(self):
+        gp = {
+            1: {2: 1, 5: 1},
+            2: {1: 1, 3: 1, 4: 1, 6: 1},
+            3: {2: 1, 7: 2},
+            4: {2: 1},
+            5: {1: 1, 5: 1, 6: 1},
+            6: {2: 1, 5: 1},
+            7: {3: 2},
+            8: {}}
+        g = Graph()
+        for k in gp.keys():
+            g.add_node(k)
+        for k, v in gp.iteritems():
+            for kp, w in v.iteritems():
+                if not g.are_neighbors(k, kp):  # double count otherwise...
+                    g.add_edge(k, kp, w)
+        self.assertEqual(g, gp)
+
+    def test_path(self):
+        g = Graph()
+        g.update({
+            1: {2: 1, 5: 1},
+            2: {1: 1, 3: 1, 4: 1, 6: 1},
+            3: {2: 1, 7: 2},
+            4: {2: 1},
+            5: {1: 1, 5: 5, 6: 1},
+            6: {2: 1, 5: 1},
+            7: {3: 2}})
+        self.assertEqual(graph_epath(g), [3, 7, 3, 2, 6, 5, 5, 5, 5, 5, 5, 1, 2, 4])
+        g.del_edge(5, 5, 5)
+        self.assertEqual(graph_epath(g), [3, 7, 3, 2, 6, 5, 1, 2, 4])
+        g.add_node(8)
+        g.add_edge(1, 8)
+        self.assertRaises(ValueError, graph_epath, g)
+
+    def test_tree(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(t, dict({x: [x + 1] for x in range(n)}.items() + {n: []}.items()))
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(0)  # 2
+        t.add_leaf(0)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(2)  # 5
+        t.add_leaf(4)  # 6
+        self.assertEqual(t, {0: [1, 2, 3], 2: [4, 5], 1: [], 3: [], 4: [6], 5: [], 6: []})
+
+    def test_prufer(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(prufer(t), range(n - 1, 0, -1))
+        self.assertEqual(prufer_parse(range(n - 1, 0, -1)), t)
+        p = [0, 0, 2, 4, 2]
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(0)  # 2
+        t.add_leaf(0)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(2)  # 5
+        t.add_leaf(4)  # 6
+        self.assertEqual(prufer(t), p)
+        self.assertEqual(prufer_parse(p), t)
+
+    def test_planar(self):
+        t = Tree()
+        n = 5
+        for i in range(n):
+            t.add_leaf(i)
+        self.assertEqual(planar(t), [1] * n + [0] * n)
+        self.assertEqual(planar_parse([1] * n + [0] * n), t)
+        t = Tree()     # 0
+        t.add_leaf(0)  # 1
+        t.add_leaf(1)  # 2
+        t.add_leaf(2)  # 3
+        t.add_leaf(2)  # 4
+        t.add_leaf(0)  # 5
+        t.add_leaf(5)  # 6
+        self.assertEqual("".join([str(x) for x in planar(t)]), "111010001100")
+        self.assertEqual(planar_parse("111010001100"), t)
+
+
+if "__main__" == __name__:
+    unittest.main()
